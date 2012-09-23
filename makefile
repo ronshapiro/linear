@@ -3,6 +3,7 @@ compile: Matrix.java MatrixPowerTester.java
 
 run: Matrix.class MatrixPowerTester.class
 	java MatrixPowerTester input.txt output.txt
+	cat output.txt
 
 clean:
 	rm *.class
