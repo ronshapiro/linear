@@ -1,7 +1,9 @@
 public class MatrixPowerTester{
   public static void main(String[] args){
     for (int i = 0; i < args.length; i++) System.out.println(args[i]);
-    Matrix m = new Matrix(1,1);
+
+    Matrix m = new Matrix(abc);
+    System.out.println(m);
     /*
     Note cloning might not even be necessary - 
     suppose k = 4
