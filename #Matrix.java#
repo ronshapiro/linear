@@ -53,10 +53,6 @@ public class Matrix{
     
     return sum;
   }
-  
-  public Matrix subtract(Matrix second){
-    return add(second.clone().scale(-1));
-  }
 
   public Matrix scale(double scalar){
     for (int i = 0; i < this.rows(); i++)
