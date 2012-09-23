@@ -6,4 +6,4 @@ run: Matrix.class MatrixPowerTester.class
 	cat output.txt
 
 clean:
-	rm *.class
+	rm *.class output.txt
