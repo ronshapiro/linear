@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 public class MatrixPowerTester{
   public static void main(String[] args){
@@ -12,42 +14,48 @@ public class MatrixPowerTester{
       System.exit(0);
     }
 
-
-
-    Scanner inputFile = new Scanner(System.in); //initialize so that compiler doesn't yell that the object wasn't initialized
+    Scanner inputFile = null;
     try {
       inputFile = new Scanner(new File(args[0]));
     } catch (FileNotFoundException e){
-      System.err.println("File Not Found");
+      System.err.println("IO Error: Input file not found");
       System.exit(0);
     }
     
-    /*
-    for (int i = 0; i < args.length; i++) System.out.println(args[i]);
-    Matrix m = new Matrix(new int[][]{{1, 2}, {3, 4}});
-    Matrix identity = new Matrix(new int[][]{{1, 0}, {0, 1}});
-    Matrix switcher = new Matrix(new int[][]{{0, 1}, {1, 0}});
-    Matrix zero  = new Matrix(new int[][]{{0, 0}, {0, 0}});    
 
-    Matrix twoA1 = new Matrix(new int[][]{{2,3},{5,1}});
-    Matrix twoA2 = new Matrix(new int[][]{{4}, {2}});
-    System.out.println(twoA1.multiply(twoA2));
+    // Read input and initialize Matrix
+    int SIZE = -1;
+    int K = -1;
+    Matrix A = null;
+    for(int i = 0; inputFile.hasNextLine(); i++){
+      String line = inputFile.nextLine();
+      if (i == 0){
+        SIZE = Integer.parseInt(line);
+        A = new Matrix(SIZE, SIZE);
+      } else if (i == 1){
+        K = Integer.parseInt(line);
+      }
+      else {
+        String[] nums = line.split(" ");
+        int index = i - 2; //2 is the amount of lines before the matrix begins
+        for (int j = 0; j < nums.length; j++)
+          A.set(index, j, Double.parseDouble(nums[j]));
+      }
+    }
+    final Matrix INITIAL_MATRIX = A.clone();
 
-    System.out.println(identity.scale(2.0));
-    */
+    for (int times = K; times > 0; times--)
+      A = A.multiply(A);
 
-    /*
-    Note cloning might not even be necessary - 
-    suppose k = 4
-    a a a a a a a a
-    compute a*a once, then duplicate matrix 3 more times
-    b = a * a;
-    b b.clone() b.clone() b.clone()
-    compute b*b once, then duplicate matrix 1 more time
-    c = b * b
-    c c.clone()
-    compute d = c * c
-    */
+    PrintStream outputFile = null;
+    try {
+      outputFile = new PrintStream(new FileOutputStream(args[1]));
+    } catch (FileNotFoundException e){
+      System.err.println("IO Error: Output file not found");
+      System.exit(0);
+    }
+    outputFile.println(A);
+    
   }
 }
   
