@@ -22,7 +22,6 @@ public class MatrixPowerTester{
       System.exit(0);
     }
     
-
     // Read input and initialize Matrix
     int SIZE = -1;
     int K = -1;
@@ -55,7 +54,5 @@ public class MatrixPowerTester{
       System.exit(0);
     }
     outputFile.println(A);
-    
   }
 }
-  

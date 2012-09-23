@@ -1,16 +1,12 @@
 public class Matrix{
   private double[][] mMatrix;
 
-  /*
-    @param n number of rows
-    @param m number of columns
-   */
-  public Matrix(int n, int m){
-    mMatrix = new double[n][m];
+
+  public Matrix(int rows, int cols){
+    mMatrix = new double[rows][cols];
   }
   
   public Matrix(double[][] array){
-    //assert that all inner arrays are same length
     mMatrix = new double[array.length][array[0].length];
     for (int i = 0; i < array.length; i++)
       for (int j = 0; j < array[0].length; j++)
@@ -25,7 +21,6 @@ public class Matrix{
   }
   
   public Matrix clone(){
-    /* TODO create a new matrix with the same values*/
     return new Matrix(mMatrix);
   }
 
@@ -79,4 +74,3 @@ public class Matrix{
     return output.substring(0, output.length()-2);
   }
 }
-
