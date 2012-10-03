@@ -91,4 +91,21 @@ public class Matrix{
     }
     return output.substring(0, output.length()-2);
   }
+
+  public boolean equals(Matrix second){
+    if (this.cols() != second.cols() ||
+        this.rows() != second.rows()){
+      System.out.println("Dimensions not equal");
+      return false;
+    }
+    for (int i = 0; i < this.rows(); i++)
+      for (int j = 0; j < this.cols(); j++)
+        if (!this.get(i,j).equals(second.get(i,j))){
+          System.out.println("Something not equal " + this.get(i,j) + " " + second.get(i,j));
+          return false;
+        }
+    return true;
+    
+  }
+  
 }
