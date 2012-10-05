@@ -1,6 +1,37 @@
 public class Matrix{
   private double[][] mMatrix;
 
+  public static Matrix identity(int dimensions){
+    Matrix identity = new Matrix(dimensions, dimensions);
+    for (int i = 0; i < dimensions; i++)
+      identity.set(i, i, 1);
+    return identity;
+  }
+  
+  public static Matrix columnVector(int rows){
+    return new Matrix(rows, 1);
+  }
+
+  public static Matrix rowVector(int columns){
+    return new Matrix(1, columns);
+  }
+  
+  public static double dot(RowVector r, ColumnVector c){
+    if (r.length() != c.length()){
+      System.err.println("Vectors are different lengths");
+      System.exit(0);
+    }
+    double dotProduct = 0;
+    for (int i = 0; i < r.length(); i++){
+      dotProduct += r.get(i)*c.get(i);
+    }
+    return dotProduct;
+  }
+
+  public Matrix(){
+    System.err.println("Can't create empty matrix!");
+    System.exit(0);
+  }
 
   public Matrix(int rows, int cols){
     mMatrix = new double[rows][cols];
@@ -95,7 +126,7 @@ public class Matrix{
   public boolean equals(Matrix second){
     if (this.cols() != second.cols() ||
         this.rows() != second.rows()){
-      System.out.println("Dimensions not equal");
+      System.err.println("Dimensions not equal");
       return false;
     }
     for (int i = 0; i < this.rows(); i++)
@@ -105,7 +136,108 @@ public class Matrix{
           return false;
         }
     return true;
+  xb}
+
+  public boolean isSquare(){
+    return rows() == cols();
+  }
+  public boolean isColumn(){
+    return cols() == 1;
+  }
+
+  public ColumnVector columnClone(int col){
+    ColumnVector clone = new ColumnVector(rows());
+    for (int i = 0; i < rows(); i++)
+      clone.set(i, get(i, col));
+    return clone;
+  }
+
+  public RowVector rowClone(int row){
+    RowVector clone = new RowVector(cols());
+    for (int i = 0; i < cols(); i++)
+      clone.set(i, get(row, i));
+    return clone;
+  }
+
+  public void swapRows(int row1, int row2){
+    for (int i = 0; i < cols(); i++){
+      double temp = get(row1, i);
+      set(row1, i, get(row2, i));
+      set(row2, i, temp);
+    }
+  }
+
+  public void multiplyRow(int rowId, double multiplier){
+    for (int i = 0; i < cols(); i++)
+      set(rowId, i, get(rowId, i) * multiplier);
+  }
+
+  /*
+    @param k - the diagonal-width
+   */
+  /*
+  public Matrix solveDiagonalSystem(Matrix b, int k){
     
   }
-  
+  */
+  public Matrix solveSystem(ColumnVector b){
+    if (!b.isColumn()){
+      System.err.println("b is not a column vector");
+      System.exit(0);
+    }
+    if (!isSquare()){
+      System.err.println("A is not a square");
+      System.exit(0);
+    }
+    if (b.rows() != rows()){
+      System.err.println("b does not have enough rows");
+      System.exit(0);
+    }
+
+    Matrix U = clone();
+    Matrix L = Matrix.identity(rows());
+
+    if (U.get(0,0).equals(0.0))
+      for (int i = 1; i < U.cols(); i++)
+        if (!U.get(i,0).equals(0.0)){
+          U.swapRows(0, i);
+          break;
+        }
+
+    //TODO: ROW SWAPS for rows after the first
+    for (int j = 0; j < U.cols(); j++){
+      int pivotRow = j;
+      double pivot = U.get(j, j);
+      for (int i = j+1; i < U.rows(); i++){
+        double l = U.get(i,j)/pivot;
+        L.set(i,j,l);
+        for (int k = j; k < U.cols(); k++){
+          U.set(i, k, U.get(i, k) - U.get(pivotRow, k) * l);
+        }
+      }
+    }
+
+    ColumnVector c = new ColumnVector(b.rows());
+    for (int i = 0; i < b.rows(); i++){
+      double val = b.get(i);
+      RowVector r = L.rowClone(i);
+      for (int j = 0; j < i; j++){
+        val -= r.get(j)*c.get(j);
+      }
+      c.set(i,val/r.get(i));
+    }
+
+    ColumnVector x = new ColumnVector(b.rows());
+    for (int i = b.rows()-1; i >= 0; i--){
+      double val = c.get(i);
+      RowVector r = U.rowClone(i);
+      for (int j = b.rows()-1; j >= i; j--){
+        val -= r.get(j)*x.get(j);
+      }
+      x.set(i,val/r.get(i));
+    }
+    
+    return x;
+  }
 }
+

@@ -14,9 +14,13 @@ public class MatrixPowerTester{
       System.exit(0);
     }
 
-    Matrix a = new Matrix(new int[][]{{1, 2}, {2, 1}});
-    Matrix b = new Matrix(new int[][]{{5, 6}, {7, 8}});
-    
+    Matrix a = new Matrix(new int[][]{{1, 2},
+                                      {4, 9}});
+    ColumnVector b = new ColumnVector(2);
+    b.set(0, 5.0);
+    b.set(1, 21.0);
+    a.solveSystem(b);
+
     Scanner inputFile = null;
     try {
       inputFile = new Scanner(new File(args[0]));
