@@ -10,15 +10,6 @@ public class MatrixTester{
       System.err.println("Too few arguments. Please pass input_file.");
       System.exit(0);
     }
-    
-    /*
-    Matrix a = new Matrix(new int[][]{{1, 2},
-                                      {4, 9}});
-    ColumnVector b = new ColumnVector(2);
-    b.set(0, 5.0);
-    b.set(1, 21.0);
-    a.solveSystem(b);
-    */
 
     Scanner inputFile = null;
     try {
@@ -57,12 +48,15 @@ public class MatrixTester{
       }
     }
 
+    Matrix diagonalSolution = A.solveDiagonalSystem(b, K);
+    System.out.println(diagonalSolution);
+    
+    /*
     Matrix regularSolution = A.solve(b);
     System.out.println(regularSolution + "\n");
-
-    Matrix diagonalSolution = A.solveDiagonalSystem(b, K);
-    System.out.println(diagonalSolution + "\n");
     
     System.out.println("Solutions equal? " + regularSolution.equals(diagonalSolution));
+    */
+    
   }
 }
