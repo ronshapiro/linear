@@ -136,7 +136,7 @@ public class Matrix{
           return false;
         }
     return true;
-  xb}
+  }
 
   public boolean isSquare(){
     return rows() == cols();
