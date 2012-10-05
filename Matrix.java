@@ -172,14 +172,6 @@ public class Matrix{
       set(rowId, i, get(rowId, i) * multiplier);
   }
 
-  /*
-    @param k - the diagonal-width
-   */
-  /*
-  public Matrix solveDiagonalSystem(Matrix b, int k){
-    
-  }
-  */
   public Matrix solveSystem(ColumnVector b){
     if (!b.isColumn()){
       System.err.println("b is not a column vector");
@@ -237,6 +229,83 @@ public class Matrix{
       x.set(i,val/r.get(i));
     }
     
+    return x;
+  }
+
+  public Matrix solve(ColumnVector b){
+    return solveDiagonalSystem(b, cols()*2+1);
+  }
+  
+  public Matrix solveDiagonalSystem(ColumnVector b, int width){
+    if (!b.isColumn()){
+      System.err.println("b is not a column vector");
+      System.exit(0);
+    }
+    if (!isSquare()){
+      System.err.println("A is not a square");
+      System.exit(0);
+    }
+    if (b.rows() != rows()){
+      System.err.println("b does not have enough rows");
+      System.exit(0);
+    }
+    int n = 0;
+
+    int span = (width-1)/2; //the span is the movement in any direction of the diagonal. for example, if width is 5, span is 2; width = 3, span = 1
+    
+    Matrix U = clone();
+    Matrix L = Matrix.identity(rows());
+
+    if (U.get(0,0).equals(0.0))
+      for (int i = 1; i < U.cols(); i++)
+        if (!U.get(i,0).equals(0.0)){
+          U.swapRows(0, i);
+          break;
+        }
+
+    //TODO: ROW SWAPS for rows after the first
+    //A = LU
+    for (int j = 0; j < U.cols(); j++){
+      int pivotRow = j;
+      double pivot = U.get(j, j);
+      for (int i = j+1, spanCounter = 0;
+           i < U.rows() && spanCounter < span;
+           i++, spanCounter++){
+        double l = U.get(i,j)/pivot;
+        L.set(i,j,l);
+        for (int k = j; k < U.cols(); k++){
+          n++;
+          U.set(i, k, U.get(i, k) - U.get(pivotRow, k) * l);
+        }
+      }
+    }
+    System.out.println("L = \n" + L);
+    System.out.println("U = \n" + U);    
+
+    //Lc = b
+    ColumnVector c = new ColumnVector(b.rows());
+    for (int i = 0; i < b.rows(); i++){
+      double val = b.get(i);
+      RowVector r = L.rowClone(i);
+      for (int j = 0; j < i; j++){
+        n++;
+        val -= r.get(j)*c.get(j);
+      }
+      c.set(i,val/r.get(i));
+    }
+
+    //Ux = c
+    ColumnVector x = new ColumnVector(b.rows());
+    for (int i = b.rows()-1; i >= 0; i--){
+      double val = c.get(i);
+      RowVector r = U.rowClone(i);
+      for (int j = b.rows()-1; j >= i; j--){
+        n++;
+        val -= r.get(j)*x.get(j);
+      }
+      x.set(i,val/r.get(i));
+    }
+    System.out.println("n = " + n);
     return x;
   }
 }

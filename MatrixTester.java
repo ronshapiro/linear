@@ -57,6 +57,12 @@ public class MatrixTester{
       }
     }
 
-    System.out.println(A.solveSystem(b));
+    Matrix regularSolution = A.solve(b);
+    System.out.println(regularSolution + "\n");
+
+    Matrix diagonalSolution = A.solveDiagonalSystem(b, K);
+    System.out.println(diagonalSolution + "\n");
+    
+    System.out.println("Solutions equal? " + regularSolution.equals(diagonalSolution));
   }
 }
