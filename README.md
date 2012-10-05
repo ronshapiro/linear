@@ -7,5 +7,5 @@
      - Edit input.txt to alter the input values for the matrix and k
      - Output will be in output.txt. This will also be run with `cat` after completion to display its contents to the terminal
 2. Without a Makefile
-   - Compile with `javac MatrixPowerTester.java`
-   - Run with `java MatrixPowerTester input_file output_file`
+   - Compile with `javac MatrixTester.java`
+   - Run with `java MatrixTester input_file output_file`

@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 
-public class MatrixPowerTester{
+public class MatrixTester{
   public static void main(String[] args){
     if (args.length > 2){
       System.err.println("Too many arguments. Please pass input_file and output_file");
