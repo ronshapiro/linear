@@ -6,20 +6,19 @@ import java.io.FileOutputStream;
 
 public class MatrixTester{
   public static void main(String[] args){
-    if (args.length > 2){
-      System.err.println("Too many arguments. Please pass input_file and output_file");
-      System.exit(0);
-    } else if (args.length < 2){
-      System.err.println("Too few arguments. Please pass input_file and output_file");
+    if (args.length < 1){
+      System.err.println("Too few arguments. Please pass input_file.");
       System.exit(0);
     }
-
+    
+    /*
     Matrix a = new Matrix(new int[][]{{1, 2},
                                       {4, 9}});
     ColumnVector b = new ColumnVector(2);
     b.set(0, 5.0);
     b.set(1, 21.0);
     a.solveSystem(b);
+    */
 
     Scanner inputFile = null;
     try {
@@ -33,33 +32,31 @@ public class MatrixTester{
     int SIZE = -1;
     int K = -1;
     Matrix A = null;
+    ColumnVector b = null;
+    int A_Index = 0;
+    int bIndex = 0;
     for(int i = 0; inputFile.hasNextLine(); i++){
       String line = inputFile.nextLine();
       if (i == 0){
         SIZE = Integer.parseInt(line);
         A = new Matrix(SIZE, SIZE);
-      } else if (i == 1){
+        b = new ColumnVector(SIZE);
+      }
+      else if (i == 1){
         K = Integer.parseInt(line);
       }
-      else {
+      else if (i - 2 < SIZE){
         String[] nums = line.split(" ");
-        int index = i - 2; //2 is the amount of lines before the matrix begins
         for (int j = 0; j < nums.length; j++)
-          A.set(index, j, Double.parseDouble(nums[j]));
+          A.set(A_Index, j, Double.parseDouble(nums[j]));
+        A_Index++;
+      }
+      else {
+        b.set(bIndex, Double.parseDouble(line));
+        bIndex++;
       }
     }
-    final Matrix INITIAL_MATRIX = A.clone();
 
-    for (int times = K; times > 0; times--)
-      A = A.multiply(A);
-
-    PrintStream outputFile = null;
-    try {
-      outputFile = new PrintStream(new FileOutputStream(args[1]));
-    } catch (FileNotFoundException e){
-      System.err.println("IO Error: Output file not found");
-      System.exit(0);
-    }
-    outputFile.println(A);
+    System.out.println(A.solveSystem(b));
   }
 }
