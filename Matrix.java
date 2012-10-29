@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Matrix{
   private double[][] mMatrix;
 
@@ -6,14 +8,6 @@ public class Matrix{
     for (int i = 0; i < dimensions; i++)
       identity.set(i, i, 1);
     return identity;
-  }
-  
-  public static Matrix columnVector(int rows){
-    return new Matrix(rows, 1);
-  }
-
-  public static Matrix rowVector(int columns){
-    return new Matrix(1, columns);
   }
   
   public static double dot(RowVector r, ColumnVector c){
@@ -26,6 +20,22 @@ public class Matrix{
       dotProduct += r.get(i)*c.get(i);
     }
     return dotProduct;
+  }
+
+  public Matrix augmentMatrix(ColumnVector c){
+    if (c.rows() != this.rows()){
+      System.err.println("The rows of the matrix and vector don't match.");
+      System.exit(0);
+    }
+    Matrix augmented = new Matrix(this.rows(), this.cols()+1);
+    for (int i = 0; i < this.rows(); i++)
+      for (int j = 0; j < this.cols(); j++)
+        augmented.set(i,j, mMatrix[i][j]);
+    for (int i = 0; i < this.rows(); i++){
+      augmented.set(i, augmented.cols()-1, c.get(i));
+    }
+
+    return augmented;
   }
 
   public Matrix(){
@@ -58,7 +68,7 @@ public class Matrix{
   public void set(int n, int m, double value){
     mMatrix[n][m] = value;
   }
-  
+
   public Double get(int n, int m){
     return new Double(mMatrix[n][m]);
   }
@@ -262,4 +272,38 @@ public class Matrix{
     //System.out.println("n = " + n); //uncomment this line to see the amount of calculations necessary to solve
     return x;
   }
+
+  public Matrix rref(ColumnVector c){
+    Matrix rref = augmentMatrix(c);
+
+    //perform row swap for first row if necessary
+    if (rref.get(0,0).equals(0.0)){
+      boolean successful = false;
+      for (int i = 1; i < rref.cols(); i++)
+        if (!rref.get(i,0).equals(0.0)){
+          rref.swapRows(0, i);
+          successful = true;
+          break;
+        }
+      if (!successful){
+        System.out.println("No row swap was available on the first row");
+        System.exit(0);
+      }
+    }
+    
+    for (int i = 0; i < rref.cols() && i < rref.rows(); i++){
+      for (int j = i + 1; j < rref.rows(); j++){
+        double factor = rref.get(j,i)/rref.get(i, i);
+        if (rref.get(i, i).equals(0.0))
+          factor = 1;
+        for (int k = 0; k <  rref.cols(); k++)
+          rref.set(j,k, rref.get(j,k) - factor*rref.get(i,k));
+      }
+    }
+
+    return rref;
+  }
+
+  private void println(String a){ System.out.println(a);}
 }
+

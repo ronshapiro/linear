@@ -20,23 +20,23 @@ public class MatrixTester{
     }
     
     // Read input and initialize Matrix
-    int SIZE = -1;
-    int K = -1;
     Matrix A = null;
     ColumnVector b = null;
     int A_Index = 0;
     int bIndex = 0;
+    int m = 0, n = 0;
     for(int i = 0; inputFile.hasNextLine(); i++){
       String line = inputFile.nextLine();
       if (i == 0){
-        SIZE = Integer.parseInt(line);
-        A = new Matrix(SIZE, SIZE);
-        b = new ColumnVector(SIZE);
+        m = Integer.parseInt(line);        
       }
       else if (i == 1){
-        K = Integer.parseInt(line);
+        n = Integer.parseInt(line);
+        A = new Matrix(m, n);
+        b = new ColumnVector(m);
+        
       }
-      else if (i - 2 < SIZE){
+      else if (i - 2 < m){
         String[] nums = line.split(" ");
         for (int j = 0; j < nums.length; j++)
           A.set(A_Index, j, Double.parseDouble(nums[j]));
@@ -47,16 +47,7 @@ public class MatrixTester{
         bIndex++;
       }
     }
-
-    Matrix diagonalSolution = A.solveDiagonalSystem(b, K);
-    System.out.println(diagonalSolution);
-    
-    /*
-    Matrix regularSolution = A.solve(b);
-    System.out.println(regularSolution + "\n");
-    
-    System.out.println("Solutions equal? " + regularSolution.equals(diagonalSolution));
-    */
-    
+    System.out.println(A.rref(b));
+      
   }
 }
