@@ -47,7 +47,8 @@ public class MatrixTester{
         bIndex++;
       }
     }
-    System.out.println(A.rref(b));
+    //System.out.println(A.augmentMatrix(b).rref());
+    System.out.println(A.rref());
       
   }
 }

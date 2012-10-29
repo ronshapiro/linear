@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Matrix{
   private double[][] mMatrix;
+  private Integer rank = null;
 
   public static Matrix identity(int dimensions){
     Matrix identity = new Matrix(dimensions, dimensions);
@@ -37,6 +38,14 @@ public class Matrix{
 
     return augmented;
   }
+  public Matrix transpose(){
+    Matrix transpose = new Matrix(cols(), rows());
+
+    for (int i = 0; i < rows(); i++)
+      for (int j = 0; j < cols(); j++)
+        transpose.set(j, i, get(i,j));
+    return transpose;
+  }
 
   public Matrix(){
     System.err.println("Can't create empty matrix!");
@@ -66,6 +75,7 @@ public class Matrix{
   }
 
   public void set(int n, int m, double value){
+    if (value == -0.0) value = 0.0;
     mMatrix[n][m] = value;
   }
 
@@ -273,8 +283,8 @@ public class Matrix{
     return x;
   }
 
-  public Matrix rref(ColumnVector c){
-    Matrix rref = augmentMatrix(c);
+  public Matrix rref(){
+    Matrix rref = clone();
 
     //perform row swap for first row if necessary
     if (rref.get(0,0).equals(0.0)){
@@ -289,21 +299,61 @@ public class Matrix{
         System.out.println("No row swap was available on the first row");
         System.exit(0);
       }
-    }
-    
+   } 
+
+    //A -> U
     for (int i = 0; i < rref.cols() && i < rref.rows(); i++){
       for (int j = i + 1; j < rref.rows(); j++){
-        double factor = rref.get(j,i)/rref.get(i, i);
-        if (rref.get(i, i).equals(0.0))
-          factor = 1;
+        Double factor = rref.get(j,i)/rref.get(i, i);
+        if (factor.isNaN())
+          factor = 1.0;
         for (int k = 0; k <  rref.cols(); k++)
           rref.set(j,k, rref.get(j,k) - factor*rref.get(i,k));
       }
     }
 
+    ArrayList<Integer> pivotX = new ArrayList<Integer>();
+    ArrayList<Integer> pivotY = new ArrayList<Integer>();
+    int lastPivotColumn = 0;
+    for (int i = 0; i < rref.rows(); i++){
+      for (int j = lastPivotColumn; j < rref.cols(); j++){
+        if (!rref.get(i,j).equals(0.0)){
+          pivotX.add(i);
+          pivotY.add(j);
+          lastPivotColumn = j;
+          break;
+        }
+      }
+    }
+
+    //create zeros above pivots
+    for (int i = pivotX.size()-1; i >= 0; i--){
+      Double pivot = rref.get(pivotX.get(i), pivotY.get(i));
+      for (int row = 0; row < pivotX.get(i); row++){
+        Double factor = rref.get(row, pivotY.get(i))/pivot;
+        for (int col = 0; col < rref.cols(); col++){
+          rref.set(row, col, rref.get(row,col) - factor*rref.get(pivotX.get(i), col));
+        }
+      }
+    }
+    
+    //produce ones in all the pivots
+    for (int i = 0; i < pivotX.size(); i++){
+      int row = pivotX.get(i);
+      double pivot = rref.get(pivotX.get(i), pivotY.get(i));
+      for (int col = 0; col < rref.cols(); col++)
+        rref.set(row, col, rref.get(row, col)/pivot);
+    }
+
+    rank = pivotX.size();
+
     return rref;
   }
 
-  private void println(String a){ System.out.println(a);}
+  public int rank(){
+    if (rank == null)
+      rref();
+    return rank;
+  }
+  private void println(Object a){ System.out.println(a);}
 }
-
