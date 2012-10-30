@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 public class MatrixTester{
   public static void main(String[] args){
@@ -47,8 +48,25 @@ public class MatrixTester{
         bIndex++;
       }
     }
+
+    Matrix Ab = A.augmentMatrix(b);
     //System.out.println(A.augmentMatrix(b).rref());
-    System.out.println(A.rref());
-      
+    Matrix rref = A.rref();
+    System.out.println("RREF = \n" + rref);
+    ArrayList<Solution> solutions = Matrix.findSolutions(rref);
+    Solution particular = null;
+    ArrayList<Solution> specialSolutions = new ArrayList<Solution>();
+    Matrix nullspace = new Matrix(n-1, 0);
+    for (Solution s : solutions){
+      if (s.getType() == SolutionType.SPECIAL)
+        nullspace = nullspace.augmentMatrix(s.getVector());
+      else
+        particular = s;
+    }
+    if (particular != null)
+      System.out.println("The particular solution is:\n" + particular.getVector());
+    if (nullspace.cols() > 0)
+      System.out.println("The nullspace (set of special solutions) is:\n" + nullspace);
+    
   }
 }

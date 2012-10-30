@@ -5,7 +5,7 @@ public class RowVector extends Matrix{
   public void set(int col, double val){
     set(0, col, val);
   }
-  public double get(int col){
+  public Double get(int col){
     return get(0, col);
   }
   public int length(){

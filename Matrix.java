@@ -152,7 +152,6 @@ public class Matrix{
     for (int i = 0; i < this.rows(); i++)
       for (int j = 0; j < this.cols(); j++)
         if (!this.get(i,j).equals(second.get(i,j))){
-          System.out.println("Something not equal " + this.get(i,j) + " " + second.get(i,j));
           return false;
         }
     return true;
@@ -348,6 +347,86 @@ public class Matrix{
     rank = pivotX.size();
 
     return rref;
+  }
+
+  public static ArrayList<Solution> findSolutions(Matrix rref){
+    ArrayList<Solution> solutions = new ArrayList<Solution>();
+    for (int i = rref.rows()-1; i >= 0; i--){
+      boolean zeroRow = true;
+      for (int j = 0; j < rref.cols()-1; j++){
+        if (!rref.get(i,j).equals(0.0)){
+          zeroRow = false;
+          break;
+        }
+      }
+      if (zeroRow &&
+          !rref.get(i, rref.cols()-1).equals(0.0)){
+        System.out.println("There are no solutions since there is a zero row in R but the corresponding row in vector d is not zero");
+        return solutions;
+      }
+    }
+
+    //find pivots
+    ArrayList<Integer> pivotX = new ArrayList<Integer>();
+    ArrayList<Integer> pivotY = new ArrayList<Integer>();
+    ArrayList<ColumnVector> freeColumns = new ArrayList<ColumnVector>();
+    ArrayList<ColumnVector> pivotColumns = new ArrayList<ColumnVector>();
+    int lastPivotColumn = 0;
+    for (int i = 0; i < rref.rows(); i++){
+      for (int j = lastPivotColumn; j < rref.cols(); j++){
+        if (!rref.get(i,j).equals(0.0)){
+          pivotX.add(i);
+          pivotY.add(j);
+          lastPivotColumn = j;
+          ColumnVector c = new ColumnVector(rref.rows());
+          for (int k = 0; k < c.length(); k++){
+            c.set(k, rref.get(k, j));
+          }
+          pivotColumns.add(c);
+          break;
+        }
+      }
+    }
+
+    for (int i = 0; i < rref.cols(); i++){
+      ColumnVector c = new ColumnVector(rref.rows());
+      for (int j = 0; j < c.length(); j++){
+        c.set(j, rref.get(j, i));
+      }
+      boolean found = false;
+      for (int j = 0; j < pivotColumns.size(); j++){
+        if (pivotColumns.get(j).equals(c))
+          found = true;
+      }
+      if (!found)
+        freeColumns.add(c);
+    }
+
+    for (int i = 0; i < freeColumns.size(); i++){
+      ColumnVector c = new ColumnVector(rref.cols()-1);
+      for (int j = 0; j < c.length(); j++) //Use NaN as a marker for unset spots in the vector
+        c.set(j, Double.NaN);
+      int pivotCounter = 0;
+      for (int j = 0; j < pivotY.size(); j++)
+        c.set(pivotY.get(j), -1*freeColumns.get(i).get(pivotCounter++));
+      int nanCount = 0;
+      for (int j = 0; j < c.length(); j++){
+        if (Double.isNaN(c.get(j))){
+          if (nanCount == i)
+            c.set(j, 1);
+          else
+            c.set(j, 0);
+          nanCount++;
+        }
+      }
+
+      if (i == freeColumns.size()-1)
+        solutions.add(new Solution(SolutionType.PARTICULAR, (ColumnVector)c.scale(-1)));
+      else
+        solutions.add(new Solution(SolutionType.SPECIAL, c));
+    }
+
+    return solutions;
   }
 
   public int rank(){
