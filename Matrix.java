@@ -361,7 +361,7 @@ public class Matrix{
       }
       if (zeroRow &&
           !rref.get(i, rref.cols()-1).equals(0.0)){
-        System.out.println("There are no solutions since there is a zero row in R but the corresponding row in vector d is not zero");
+        //System.out.println("There are no solutions since there is a zero row in R but the corresponding row in vector d is not zero");
         return solutions;
       }
     }

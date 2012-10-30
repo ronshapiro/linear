@@ -51,22 +51,28 @@ public class MatrixTester{
 
     Matrix Ab = A.augmentMatrix(b);
     //System.out.println(A.augmentMatrix(b).rref());
-    Matrix rref = A.rref();
+    Matrix rref = Ab.rref();
     System.out.println("RREF = \n" + rref);
     ArrayList<Solution> solutions = Matrix.findSolutions(rref);
+    if (solutions.size() == 0){
+      System.out.println("There are no solutions to this system");
+      return;
+    }
+    
     Solution particular = null;
-    ArrayList<Solution> specialSolutions = new ArrayList<Solution>();
-    Matrix nullspace = new Matrix(n-1, 0);
+    Matrix nullspace = new Matrix(n, 0);
     for (Solution s : solutions){
       if (s.getType() == SolutionType.SPECIAL)
         nullspace = nullspace.augmentMatrix(s.getVector());
       else
         particular = s;
     }
-    if (particular != null)
+    if (particular != null && nullspace.cols() == 0){
+      System.out.println("There is only one solution:\n" + particular.getVector());
+    }
+    else {
       System.out.println("The particular solution is:\n" + particular.getVector());
-    if (nullspace.cols() > 0)
-      System.out.println("The nullspace (set of special solutions) is:\n" + nullspace);
-    
+      System.out.println("The nullspace of A (the set of special solutions) is:\n" + nullspace);
+    }
   }
 }
