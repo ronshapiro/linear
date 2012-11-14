@@ -191,6 +191,41 @@ public class Matrix{
       set(rowId, i, get(rowId, i) * multiplier);
   }
 
+  public ColumnVector columnVector(){
+    if (this.cols() == 1){
+      ColumnVector c = new ColumnVector(this.rows());
+      for (int i = 0; i < this.rows(); i++){
+        c.set(i, this.get(i, 0));
+      }
+      return c;
+    }
+    else {
+      System.err.println("Matrix is not a ColumnVector, so the conversion failed");
+      System.exit(0);
+      return null;
+    }
+  }
+
+  public RowVector rowVector(){
+    if (this.rows() == 1){
+      RowVector r = new RowVector(this.cols());
+      for (int i = 0; i < this.cols(); i++){
+        r.set(i, this.get(0, i));
+      }
+      return r;
+    }
+    else {
+      System.err.println("Matrix is not a RowVector, so the conversion failed");
+      System.exit(0);
+      return null;
+    }
+  }
+
+
+  public ColumnVector solve(Matrix b){
+    return solve(b.columnVector());
+  }
+  
   public ColumnVector solve(ColumnVector b){
     return solveDiagonalSystem(b, cols()*2+1);
   }
