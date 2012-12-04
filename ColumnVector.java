@@ -11,4 +11,18 @@ public  class ColumnVector extends Matrix{
   public int length(){
     return rows();
   }
+  public double norm(){
+    double norm = 0.0;
+    for (int i = 0; i < length(); i++){
+      norm += get(i)*get(i);
+    }
+    return Math.sqrt(norm);
+  }
+  public double sum(){
+    double sum = 0.0;
+    for (int i = 0; i < length(); i++){
+      sum += get(i);
+    }
+    return Math.sqrt(sum);
+  }
 }

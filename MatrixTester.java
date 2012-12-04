@@ -12,6 +12,22 @@ public class MatrixTester{
       System.exit(0);
     }
 
+    //Matrix A1 = new Matrix(new int[][]{{2,-1,0},{-1,2,-1},{0,-1,2}});
+    Matrix A1 = new Matrix(new int[][]{
+        {2,-1,0,0,0,0,0,0,0,0},
+        {-1,2,-1,0,0,0,0,0,0,0},
+        {0,-1,2,-1,0,0,0,0,0,0},
+        {0,0,-1,2,-1,0,0,0,0,0},
+        {0,0,0,-1,2,-1,0,0,0,0},
+        {0,0,0,0,-1,2,-1,0,0,0},
+        {0,0,0,0,0,-1,2,-1,0,0},
+        {0,0,0,0,0,0,-1,2,-1,0},
+        {0,0,0,0,0,0,0,-1,2,-1},
+        {0,0,0,0,0,0,0,0,-1,2},
+      });
+    System.out.println(A1.inverseIteration());
+    System.exit(0);
+
     Scanner inputFile = null;
     try {
       inputFile = new Scanner(new File(args[0]));

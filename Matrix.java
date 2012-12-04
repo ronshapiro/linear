@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Matrix{
   private double[][] mMatrix;
@@ -38,6 +39,32 @@ public class Matrix{
 
     return augmented;
   }
+
+  public Matrix augmentMatrix(Matrix other){
+    if (other.rows() != this.rows()){
+      System.err.println("The rows of the matrices don't match.");
+      System.exit(0);
+    }
+    
+    Matrix augmented = new Matrix(this.rows(), this.cols()+other.cols());
+    for (int i = 0; i < this.rows(); i++)
+      for (int j = 0; j < this.cols(); j++)
+        augmented.set(i,j, this.get(i,j));
+    for (int i = 0; i < this.rows(); i++)
+      for (int j = 0; j < other.cols(); j++)
+        augmented.set(i,j+this.cols(), other.get(i,j));
+
+    return augmented;
+  }
+
+  public Matrix block(int startRow, int startCol, int numRows, int numCols){
+    Matrix block = new Matrix(numRows, numCols);
+    for (int i = 0; i < numRows; i++)
+      for (int j = 0; j < numCols; j++)
+        block.set(i,j, this.get(startRow+i, startCol+j));
+    return block;
+  }
+  
   public Matrix transpose(){
     Matrix transpose = new Matrix(cols(), rows());
 
@@ -316,6 +343,125 @@ public class Matrix{
     //System.out.println("n = " + n); //uncomment this line to see the amount of calculations necessary to solve
     return x;
   }
+
+  public Matrix U(){
+    /*
+    if (!isSquare()){
+      System.err.println("A is not a square");
+      System.exit(0);
+    }
+    */
+    int n = 0;
+
+    Matrix U = clone(); //don't alter internal matrix data structure
+    Matrix L = Matrix.identity(cols());
+
+    if (U.get(0,0).equals(0.0))
+      for (int i = 1; i < U.cols(); i++)
+        if (!U.get(i,0).equals(0.0)){
+          U.swapRows(0, i);
+          break;
+        }
+
+    //A = LU
+    for (int j = 0; j < U.rows(); j++){
+      int pivotRow = j;
+      double pivot = U.get(j, j);
+      
+      //Swap rows if necessary
+      Double zero = new Double(0.0);
+      if (zero.equals(pivot)){
+        for (int s = j; s < U.cols(); s++){
+          if (!zero.equals(U.get(s,s))){
+            U.swapRows(j,s);
+            break;
+          }
+        }
+      }
+      
+      for (int i = j+1; i < U.rows(); i++){
+        double l = U.get(i,j)/pivot;
+        L.set(i,j,l);
+        for (int k = j; k < U.cols(); k++){
+          n++;
+          U.set(i, k, U.get(i, k) - U.get(pivotRow, k) * l);
+        }
+      }
+    }
+    return U;
+  }
+
+  public Matrix rotate(){
+    Matrix rotate = new Matrix(rows(), cols());
+    for (int i = 0; i < rows(); i++)
+      for (int j = 0; j < cols(); j++)
+        rotate.set(i,j, get(rows()-i-1, cols()-j-1));
+    return rotate;
+  }
+
+  public Matrix inverse(){
+    //Matrix U = U();
+    Matrix augmented = augmentMatrix(identity(rows()));
+    Matrix U = augmentMatrix(identity(rows())).U(); 
+    
+    Matrix Aprime = U.block(0,0,this.rows(),this.cols());
+    Matrix Iprime = U.block(0,this.cols(),this.rows(),this.cols());
+    
+    U = Aprime.rotate().augmentMatrix(Iprime.rotate()).U();
+    Aprime = U.block(0,0,this.rows(),this.cols());
+    Iprime = U.block(0,this.cols(),this.rows(),this.cols());
+    Matrix inverse = Aprime.rotate().augmentMatrix(Iprime.rotate());
+    for (int i = 0; i < inverse.rows(); i++){
+      Double pivot = inverse.get(i,i);
+      for (int j = 0; j < inverse.cols(); j++){
+        inverse.set(i,j, inverse.get(i,j)/pivot);
+      }
+    }
+  
+    return inverse.block(0,this.cols(),this.rows(),this.cols());
+  }
+
+  public Double inverseIteration(){
+    double sigma = .0001;
+    Matrix y = new Matrix(this.rows(), 1);
+    Matrix x = new Matrix(this.rows(), 1);
+    Random r = new Random();
+    for (int n = 0; n < x.rows(); n++){
+      x.set(n,0, r.nextInt(100));
+    }
+    
+    double x_norm = 0.0;
+    for (int i = 0; i < x.rows(); i++)
+      x_norm += x.get(i,0)*x.get(i,0);
+    x_norm = Math.sqrt(x_norm);
+    
+    for (int n = 0; n < x.rows(); n++){
+      x.set(n,0, x.get(n,0)/x_norm);
+    }
+
+    double lambda = 0.0, last_lambda;
+    Matrix inverse = this.inverse();
+    while (true){
+    //for (int k = 0; k < 1000000; k++){
+      y = (this.subtract(identity(this.rows()).scale(sigma))).inverse().multiply(x);
+      double norm = 0.0;
+      for (int normCounter = 0; normCounter < y.rows(); normCounter++){
+        norm += y.get(normCounter,0)*y.get(normCounter,0);
+      }
+      norm = Math.sqrt(norm);
+      x = y.scale(1/norm);
+      last_lambda = lambda;
+      lambda = x.transpose().multiply(this).multiply(x).get(0,0);
+
+      if (Math.abs(lambda - last_lambda) < .0000000001) break;
+    }
+    
+    System.out.println(lambda);
+    System.exit(0);
+
+    return lambda;
+  }
+
 
   public Matrix rref(){
     Matrix rref = clone();
