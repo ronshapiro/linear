@@ -1,7 +1,7 @@
-Matrix.class: Matrix.java MatrixTester.java
+MatrixTester.class: Matrix.java MatrixTester.java
 	javac MatrixTester.java
 
-run: Matrix.class
+run: MatrixTester.class
 	java MatrixTester input.txt
 
 clean:
