@@ -2,18 +2,10 @@
 
 ##Usage
 1. With a Makefile
-   - Compile with `make compile`
-   - Run with `make run`
-     - Edit input.txt to alter the input values for m, C, D, and E
-     - Output will be displayed in the command line
+   - Compile and run with `make run`
 2. Without a Makefile
    - Compile with `javac MatrixTester.java`
-   - Run with `java MatrixTester input_file`
-     - Edit input.txt to alter the input values for m, C, D, and E
+   - Run with `java MatrixTester`
 
-##Input File
-The input file should follow the following format:
-    m
-    C
-    D
-    E
+##Results
+  The smallest eigenvalue of the matrix A in the document writeup is 0.08101616514083194
