@@ -442,7 +442,6 @@ public class Matrix{
     double lambda = 0.0, last_lambda;
     Matrix inverse = this.inverse();
     while (true){
-    //for (int k = 0; k < 1000000; k++){
       y = (this.subtract(identity(this.rows()).scale(sigma))).inverse().multiply(x);
       double norm = 0.0;
       for (int normCounter = 0; normCounter < y.rows(); normCounter++){
@@ -456,9 +455,6 @@ public class Matrix{
       if (Math.abs(lambda - last_lambda) < .0000000001) break;
     }
     
-    System.out.println(lambda);
-    System.exit(0);
-
     return lambda;
   }
 
